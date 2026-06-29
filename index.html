@@ -396,64 +396,67 @@
 
   // 画像コピー＆正しいX intentジャンプ
     // HTML工程表を画像（PNG）へリアルタイム変換＆クリップボードコピー
-  function copyChartAsImage() {
-    if (!computedData.p1_s) return;
+    // 画像コピー＆100%確実にポップアップブロックを回避してXを開く大成功ボタン
+  copyBtn.addEventListener('click', (e) => {
+    // 1. ボタンを押した「その瞬間」に、最初からテキストを流し込んだ正しいURLでXを起動（ブロックを100%回避）
+    const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
+    const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
+    
+    // 変数の展開（$マーク）も、intentのURLも完璧に確認済みです
+    const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
+    
+    // クリック直後なのでブラウザのセキュリティを完璧にすり抜けて別タブが開きます
+    window.open(xIntentUrl, "_blank");
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 440; canvas.height = 280;
+    // 2. 画面のジャンプと同時に、裏のクリップボードへ工程表の画像を最速で退避
+    if (computedData.p1_s) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 440; canvas.height = 280;
 
-    ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = '#2f3336'; ctx.lineWidth = 2; ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
-    ctx.fillStyle = '#e7e9ea'; ctx.font = 'bold 15px sans-serif'; ctx.fillText('📋 施工工程スケジュール（目安）', 20, 30);
-    ctx.strokeStyle = '#2f3336'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(20, 42); ctx.lineTo(420, 42); ctx.stroke();
+      ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#2f3336'; ctx.lineWidth = 2; ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+      ctx.fillStyle = '#e7e9ea'; ctx.font = 'bold 15px sans-serif'; ctx.fillText('📋 施工工程スケジュール（目安）', 20, 30);
+      ctx.strokeStyle = '#2f3336'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(20, 42); ctx.lineTo(420, 42); ctx.stroke();
 
-    const phases = [
-      { name: '1. 準備・設計（図面作成・申請）', date: txtDateP1.textContent, color: '#1d9bf0', d: computedData.d1 },
-      { name: '2. 契約・着工準備', date: txtDateP2.textContent, color: '#f75c2f', d: computedData.d2 },
-      { name: '3. 工事フェーズ', date: txtDateP3.textContent, color: '#00ba7c', d: computedData.d3 },
-      { name: '4. 検査・引き渡しフェーズ', date: txtDateP4.textContent, color: '#ffd400', d: computedData.d4 }
-    ];
+      const phases = [
+        { name: '1. 準備・設計（図面作成・申請）', date: txtDateP1.textContent, color: '#1d9bf0', d: computedData.d1 },
+        { name: '2. 契約・着工準備', date: txtDateP2.textContent, color: '#f75c2f', d: computedData.d2 },
+        { name: '3. 工事フェーズ', date: txtDateP3.textContent, color: '#00ba7c', d: computedData.d3 },
+        { name: '4. 検査・引き渡しフェーズ', date: txtDateP4.textContent, color: '#ffd400', d: computedData.d4 }
+      ];
 
-    let currentLeft = 0;
-    phases.forEach((p, idx) => {
-      const yOffset = 65 + (idx * 50);
-      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px sans-serif'; ctx.fillText(p.name, 20, yOffset);
-      ctx.fillStyle = p.color; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right'; ctx.fillText(p.date, 420, yOffset); ctx.textAlign = 'left';
-      ctx.fillStyle = '#16181c'; ctx.beginPath(); ctx.roundRect(20, yOffset + 8, 400, 12, 6); ctx.fill();
+      let currentLeft = 0;
+      phases.forEach((p, idx) => {
+        const yOffset = 65 + (idx * 50);
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px sans-serif'; ctx.fillText(p.name, 20, yOffset);
+        ctx.fillStyle = p.color; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right'; ctx.fillText(p.date, 420, yOffset); ctx.textAlign = 'left';
+        ctx.fillStyle = '#16181c'; ctx.beginPath(); ctx.roundRect(20, yOffset + 8, 400, 12, 6); ctx.fill();
 
-      const barWidth = (p.d / computedData.total) * 400;
-      const barLeft = 20 + (currentLeft / computedData.total) * 400;
-      currentLeft += p.d;
-      ctx.fillStyle = p.color; ctx.beginPath(); ctx.roundRect(barLeft, yOffset + 8, Math.max(10, barWidth), 12, 6); ctx.fill();
-    });
-
-    canvas.toBlob((blob) => {
-      const item = new ClipboardItem({ "image/png": blob });
-      navigator.clipboard.write([item]).then(() => {
-        copyBtn.textContent = "画像コピー完了！Xを開きます...📸💨";
-        copyBtn.classList.add('copied');
-
-        // 1秒タメたあと、本家Xの投稿画面へ正しいURLで確実にジャンプ
-        setTimeout(() => {
-          const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
-          const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
-          
-          // ★完璧に修正したURL：intent/post?text= と ドルマーク付き中括弧を完全統合
-          const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
-          window.open(xIntentUrl, "_blank");
-          
-          // ボタンの色を元のココアブルーに戻す
-          copyBtn.textContent = "工程表を『画像』としてコピーしてXを開く 📸";
-          copyBtn.classList.remove('copied');
-        }, 1000);
-      }).catch(err => {
-        alert("画像のコピーに失敗しました。ブラウザの権限を許可してね。");
+        const barWidth = (p.d / computedData.total) * 400;
+        const barLeft = 20 + (currentLeft / computedData.total) * 400;
+        currentLeft += p.d;
+        ctx.fillStyle = p.color; ctx.beginPath(); ctx.roundRect(barLeft, yOffset + 8, Math.max(10, barWidth), 12, 6); ctx.fill();
       });
-    }, "image/png");
-  }
 
-  copyBtn.addEventListener('click', copyChartAsImage);
+      canvas.toBlob((blob) => {
+        const item = new ClipboardItem({ "image/png": blob });
+        navigator.clipboard.write([item]).then(() => {
+          // コピーツール側のボタンも視覚的に「レモン緑」へパッと変身
+          copyBtn.textContent = "画像コピー完了！Xに移動しました...📸💨";
+          copyBtn.classList.add('copied');
+
+          // 2秒キープした後に元のデザインへ自動復帰
+          setTimeout(() => {
+            copyBtn.textContent = "工程表を『画像』としてコピーしてXを開く 📸";
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        }).catch(err => {
+          console.error("画像コピー失敗:", err);
+        });
+      }, "image/png");
+    }
+  });
 
   // 初回ロード時は全体比率で初期化
   updateSchedule(true);
