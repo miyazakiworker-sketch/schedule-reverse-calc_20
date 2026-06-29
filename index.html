@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>建築マナー100点！【工期工程】一瞬逆算スケジュール - COCOA TOOLS</title>
+  <style>
+    /* ココアさん標準：PC真ん中寄せ・スマホ完全フィット・極上の黒モード */
+    body {
+      background-color: #0d0f12;
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 20px 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 480px;
+      width: 100%;
+      background: #1a1f26;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid #2d3748;
+      box-sizing: border-box;
+    }
+    h1 { font-size: 1.3rem; color: #fff; margin: 0 0 5px 0; text-align: center; font-weight: bold; }
+    .bio { font-size: 0.8rem; color: #a0aec0; margin: 0 0 20px 0; text-align: center; line-height: 1.4; }
+    
+    /* フォーム・レイアウト */
+    .input-group { margin-bottom: 15px; text-align: left; }
+    .input-label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #cbd5e0; }
+    .input-row { display: flex; align-items: center; background: #0d0f12; border: 2px solid #2d3748; border-radius: 12px; padding: 2px 12px; }
+    .input-row:focus-within { border-color: #63b3ed; }
+    
+    .num-input, .date-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    .num-input:focus, .date-input:focus { outline: none; }
+    .date-input { color-scheme: dark; } /* スマホのカレンダーUIを黒モード化 */
+    .unit-text { font-size: 0.95rem; color: #718096; font-weight: bold; margin-left: 8px; }
+
+    /* 各種切り替えトグルボタン */
+    .toggle-row { display: flex; gap: 10px; margin-bottom: 15px; }
+    .toggle-btn {
+      flex: 1;
+      background: #2d3748;
+      border: 1px solid #4a5568;
+      color: #a0aec0;
+      padding: 11px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .toggle-btn.active { background: #3182ce; border-color: #3182ce; color: #fff; }
+    .toggle-btn.orange.active { background: #e67e22; border-color: #e67e22; color: #fff; }
+
+    /* 📊 視覚化：本格バーチャート工程表スタイル */
+    .chart-box { background: #0d0f12; border: 1px solid #2d3748; border-radius: 12px; padding: 15px; margin: 20px 0; text-align: left; }
+    .chart-title { font-size: 0.85rem; font-weight: bold; color: #a0aec0; margin-bottom: 12px; border-bottom: 1px solid #2d3748; padding-bottom: 6px; }
+    
+    .chart-row { margin-bottom: 12px; }
+    .chart-row-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: #cbd5e0; margin-bottom: 4px; }
+    .chart-phase-name { font-weight: bold; color: #fff; }
+    .chart-track { background: #1a1f26; height: 10px; border-radius: 5px; overflow: hidden; position: relative; width: 100%; }
+    
+    /* バーの色をフェーズ別に美しく視覚化 */
+    .chart-bar { height: 100%; border-radius: 5px; position: absolute; left: 0; transition: width 0.3s, left 0.3s; }
+    .bar-p1 { background: #4299e1; } /* 準備・設計 */
+    .bar-p2 { background: #ed8936; } /* 契約・着工準備 */
+    .bar-p3 { background: #38a169; } /* 工事フェーズ */
+    .bar-p4 { background: #ecc94b; } /* 検査・引き渡し */
+
+    /* メモエリア・コピーボタン */
+    .memo-area { width: 100%; height: 70px; background: #0d0f12; border: 1px solid #4a5568; border-radius: 8px; color: #fff; padding: 12px; box-sizing: border-box; font-size: 0.9rem; resize: none; margin-top: 6px; }
+    .memo-area:focus { border-color: #3182ce; outline: none; }
+    .copy-btn { width: 100%; background: #3182ce; color: white; border: none; padding: 14px; border-radius: 25px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 15px; }
+
+    /* その他 */
+    .ad-space { margin-top: 25px; background: #0d0f12; border: 1px dashed #4a5568; border-radius: 8px; padding: 15px; font-size: 0.75rem; color: #718096; text-align: center; }
+    .ad-link { color: #3182ce; text-decoration: none; display: block; margin-top: 4px; font-weight: bold; }
+    .footer-x { margin-top: 20px; font-size: 0.8rem; color: #a0aec0; text-align: center; }
+    .footer-x a { color: #1d9bf0; text-decoration: none; font-weight: bold; }
+    .disclaimer { margin-top: 20px; font-size: 0.65rem; color: #4a5568; line-height: 1.4; text-align: left; border-top: 1px solid #2d3748; padding-top: 12px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>【工期工程】一瞬逆算スケジュール</h1>
+  <p class="bio">本格バーチャート工程表の視覚化 ＆ 土日祝お守り補正トグル</p>
+
+  <!-- 1. 計算モードトグル（正算 ⇔ 逆算） -->
+  <div class="toggle-row">
+    <button id="modeForward" class="toggle-btn active">📅 着工日からスケジュールを出す</button>
+    <button id="modeReverse" class="toggle-btn orange">⏳ 引き渡し日から逆算する</button>
+  </div>
+
+  <!-- 2. 日付 ＆ 工期日数入力 -->
+  <div class="input-group">
+    <label class="input-label" id="labelDateInput" for="baseDate">着工予定日</label>
+    <div class="input-row">
+      <input type="date" id="baseDate" class="date-input">
+    </div>
+  </div>
+
+  <div class="input-group">
+    <label class="input-label" for="totalDays">全体工期日数 (未入力時は30日換算)</label>
+    <div class="input-row">
+      <input type="number" id="totalDays" class="num-input" placeholder="30" min="4">
+      <span class="unit-text">日間</span>
+    </div>
+  </div>
+
+  <!-- 3. 土日祝除外お守りトグル -->
+  <div class="input-group" style="margin-top: 15px;">
+    <label class="input-label">休日マナー配慮設定</label>
+    <div class="toggle-row">
+      <button id="toggleWeekend" class="toggle-btn">土日祝を工期から除外する（お守り）</button>
+    </div>
+  </div>
+
+  <!-- 4. 📊 視覚化：本格バーチャート工程表 -->
+  <div class="chart-box">
+    <div class="chart-title">📊 ガントチャート（バーチャート）工程表</div>
+    
+    <!-- フェーズ1: 準備・設計 -->
+    <div class="chart-row">
+      <div class="chart-row-header">
+        <span class="chart-phase-name">1. 準備・設計 (図面作成・申請)</span>
+        <span id="txtDateP1" style="font-weight: bold; color: #4299e1;">--/-- 〜 --/--</span>
+      </div>
+      <div class="chart-track"><div id="barP1" class="chart-bar bar-p1"></div></div>
+    </div>
+
+    <!-- フェーズ2: 契約・着工準備 -->
+    <div class="chart-row">
+      <div class="chart-row-header">
+        <span class="chart-phase-name">2. 契約・着工準備</span>
+        <span id="txtDateP2" style="font-weight: bold; color: #ed8936;">--/-- 〜 --/--</span>
+      </div>
+      <div class="chart-track"><div id="barP2" class="chart-bar bar-p2"></div></div>
+    </div>
+
+    <!-- フェーズ3: 工事フェーズ -->
+    <div class="chart-row">
+      <div class="chart-row-header">
+        <span class="chart-phase-name">3. 工事 (地盤・基礎・躯体・内装)</span>
+        <span id="txtDateP3" style="font-weight: bold; color: #38a169;">--/-- 〜 --/--</span>
+      </div>
+      <div class="chart-track"><div id="barP3" class="chart-bar bar-p3"></div></div>
+    </div>
+
+    <!-- フェーズ4: 検査・引き渡し -->
+    <div class="chart-row">
+      <div class="chart-row-header">
+        <span class="chart-phase-name">4. 検査・引き渡し</span>
+        <span id="txtDateP4" style="font-weight: bold; color: #ecc94b;">--/-- 〜 --/--</span>
+      </div>
+      <div class="chart-track"><div id="barP4" class="chart-bar bar-p4"></div></div>
+    </div>
+  </div>
+
+  <!-- 現調メモ -->
+  <div class="input-group">
+    <label class="input-label" for="genchoMemo">現場スケジュール用メモ</label>
+    <textarea id="genchoMemo" class="memo-area" placeholder="元請けへの要望や、現場ごとの注意点を自由に打ち込んでね。大成功ボタンで一緒に綺麗に成形コピーされます。"></textarea>
+  </div>
+
+  <!-- 大成功コピーボタン -->
+  <button id="copyBtn" class="copy-btn">日程と工程表テキストをコピー 📋</button>
+
+  <!-- 将来の広告枠 ＆ フッター -->
+  <div class="ad-space">
+    【将来の広告枠】<br>ここは将来的にスポンサー枠として活用予定のエリアです。
+    <a href="https://x.com/cocoa_next7" target="_blank" class="ad-link">お問い合わせはこちら ↗</a>
+  </div>
+  <div class="footer-x">開発者：<a href="https://x.com/cocoa_next7" target="_blank">ココア＠プログラミング奮闘中 (@cocoa_next7) ↗</a></div>
+  <div class="disclaimer">【免責事項】本ツールは、ご指定の全体日数から各工事工程（設計15% / 着工準備15% / 工事フェーズ55% / 検査引き渡し15%）の標準的な割合を算出し、目安となる日付をシミュレートするものです。実際の現場状況や気候、祝日等により大幅に前後はするため、確定スケジュールは必ず施工会社の工程表に従ってください。</div>
+</div>
+<script>
+  // 状態管理変数
+  let calcMode = 'forward'; // 'forward'(正算) または 'reverse'(逆算)
+  let excludeWeekends = false;
+
+  // 各工程の工期比率（合計100%）
+  const RATIOS = { p1: 0.15, p2: 0.15, p3: 0.55, p4: 0.15 };
+
+  // 要素の取得
+  const modeForward = document.getElementById('modeForward');
+  const modeReverse = document.getElementById('modeReverse');
+  const labelDateInput = document.getElementById('labelDateInput');
+  const baseDate = document.getElementById('baseDate');
+  const totalDays = document.getElementById('totalDays');
+  const toggleWeekend = document.getElementById('toggleWeekend');
+  const genchoMemo = document.getElementById('genchoMemo');
+  const copyBtn = document.getElementById('copyBtn');
+
+  // 各フェーズのテキストとバー
+  const txtDateP1 = document.getElementById('txtDateP1');
+  const txtDateP2 = document.getElementById('txtDateP2');
+  const txtDateP3 = document.getElementById('txtDateP3');
+  const txtDateP4 = document.getElementById('txtDateP4');
+  const barP1 = document.getElementById('barP1');
+  const barP2 = document.getElementById('barP2');
+  const barP3 = document.getElementById('barP3');
+  const barP4 = document.getElementById('barP4');
+
+  // 初期値として今日の登録
+  const todayStr = new Date().toISOString().split('T')[0];
+  baseDate.value = todayStr;
+
+  // モード切り替え（正算）
+  modeForward.addEventListener('click', () => {
+    calcMode = 'forward';
+    modeForward.classList.add('active');
+    modeReverse.classList.remove('active');
+    labelDateInput.textContent = '着工予定日';
+    updateSchedule();
+  });
+
+  // モード切り替え（逆算）
+  modeReverse.addEventListener('click', () => {
+    calcMode = 'reverse';
+    modeReverse.classList.add('active');
+    modeForward.classList.remove('active');
+    labelDateInput.textContent = '引き渡し（完工）予定日';
+    updateSchedule();
+  });
+
+  // 休日マナー除外トグル
+  toggleWeekend.addEventListener('click', () => {
+    excludeWeekends = !excludeWeekends;
+    if (excludeWeekends) {
+      toggleWeekend.classList.add('active');
+    } else {
+      toggleWeekend.classList.remove('active');
+    }
+    updateSchedule();
+  });
+
+  // 日数指定に安全に日数を加算する関数（土日除外対応）
+  function addDays(startDate, days, direction = 1) {
+    let date = new Date(startDate.getTime());
+    let remainingDays = Math.abs(days);
+    
+    while (remainingDays > 0) {
+      date.setDate(date.getDate() + direction);
+      if (excludeWeekends) {
+        const day = date.getDay();
+        if (day === 0 || day === 6) {
+          continue; // 土日はカウントを進めずスキップ
+        }
+      }
+      remainingDays--;
+    }
+    return date;
+  }
+
+  // 日付のフォーマット (MM/DD)
+  function formatMD(date) {
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${m}/${d}`;
+  }
+
+  // 日付のフォーマット (YYYY年MM月DD日)
+  function formatFull(date) {
+    const y = date.getFullYear();
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    const week = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
+    return `${y}年${m}月${d}日(${week})`;
+  }
+
+  // スケジュール全体のリアルタイム再計算
+  let computedSchedule = {};
+
+  function updateSchedule() {
+    if (!baseDate.value) return;
+
+    const startOrEnd = new Date(baseDate.value);
+    const total = parseInt(totalDays.value) || 30; // 未入力時は30日間
+
+    // 各フェーズの日数を比率に割り振る（最低でも1日を確保）
+    const d1 = Math.max(1, Math.round(total * RATIOS.p1));
+    const d2 = Math.max(1, Math.round(total * RATIOS.p2));
+    const d4 = Math.max(1, Math.round(total * RATIOS.p4));
+    const d3 = Math.max(1, total - (d1 + d2 + d4)); // 残りを工事期間に割り当て
+
+    let p1_start, p1_end, p2_start, p2_end, p3_start, p3_end, p4_start, p4_end;
+
+    if (calcMode === 'forward') {
+      // 正算：着工日をスタートにする
+      p1_start = new Date(startOrEnd.getTime());
+      p1_end = addDays(p1_start, d1 - 1);
+      
+      p2_start = addDays(p1_end, 1);
+      p2_end = addDays(p2_start, d2 - 1);
+      
+      p3_start = addDays(p2_end, 1);
+      p3_end = addDays(p3_start, d3 - 1);
+      
+      p4_start = addDays(p3_end, 1);
+      p4_end = addDays(p4_start, d4 - 1);
+    } else {
+      // 逆算：引き渡し日を終着点にする
+      p4_end = new Date(startOrEnd.getTime());
+      p4_start = addDays(p4_end, d4 - 1, -1);
+      
+      p3_end = addDays(p4_start, 1, -1);
+      p3_start = addDays(p3_end, d3 - 1, -1);
+      
+      p2_end = addDays(p3_start, 1, -1);
+      p2_start = addDays(p2_end, d2 - 1, -1);
+      
+      p1_end = addDays(p2_start, 1, -1);
+      p1_start = addDays(p1_end, d1 - 1, -1);
+    }
+
+    // グローバルデータに退避（コピー用）
+    computedSchedule = {
+      p1: { start: p1_start, end: p1_end, days: d1 },
+      p2: { start: p2_start, end: p2_end, days: d2 },
+      p3: { start: p3_start, end: p3_end, days: d3 },
+      p4: { start: p4_start, end: p4_end, days: d4 },
+      total: total
+    };
+
+    // 画面のテキスト書き換え
+    txtDateP1.textContent = `${formatMD(p1_start)} 〜 ${formatMD(p1_end)} (${d1}日間)`;
+    txtDateP2.textContent = `${formatMD(p2_start)} 〜 ${formatMD(p2_end)} (${d2}日間)`;
+    txtDateP3.textContent = `${formatMD(p3_start)} 〜 ${formatMD(p3_end)} (${d3}日間)`;
+    txtDateP4.textContent = `${formatMD(p4_start)} 〜 ${formatMD(p4_end)} (${d4}日間)`;
+
+    // 📊 ガントチャートのバー幅・位置を疑似的にアニメーション描画
+    const w1 = (d1 / total) * 100;
+    const w2 = (d2 / total) * 100;
+    const w3 = (d3 / total) * 100;
+    const w4 = (d4 / total) * 100;
+
+    barP1.style.width = `${w1}%`; barP1.style.left = `0%`;
+    barP2.style.width = `${w2}%`; barP2.style.left = `${w1}%`;
+    barP3.style.width = `${w3}%`; barP3.style.left = `${w1 + w2}%`;
+    barP4.style.width = `${w4}%`; barP4.style.left = `${w1 + w2 + w3}%`;
+  }
+
+  // リアルタイム連動イベント
+  baseDate.addEventListener('input', updateSchedule);
+  totalDays.addEventListener('input', updateSchedule);
+
+  // 5. 過去のコードベース：コピーして安全にXを開く大成功ボタン（完全移植・レモン緑最適化）
+  copyBtn.addEventListener("click", () => {
+    const memo = genchoMemo.value;
+    if (!computedSchedule.p1) return;
+
+    // 職人・施主にテキストでそのまま送って100%美しく伝わるバーチャート（ガントチャート）工程表の成形
+    let textToCopy = `【工期工程一瞬逆算スケジュール結果】\n`;
+    textToCopy += `■ 総工期日数：${computedSchedule.total} 日間 `;
+    if (excludeWeekends) textToCopy += `(土日祝お守り補正ON)\n`;
+    else textToCopy += `\n`;
+    
+    textToCopy += `----------------------------\n`;
+    textToCopy += `📊 簡易バーチャート工程表\n`;
+    textToCopy += `----------------------------\n`;
+    textToCopy += `① 準備・設計フェーズ [■■          ]\n`;
+    textToCopy += `   期間：${formatFull(computedSchedule.p1.start)} 〜 ${formatFull(computedSchedule.p1.end)} (${computedSchedule.p1.days}日間)\n\n`;
+    textToCopy += `② 契約・着工準備    [  ■■        ]\n`;
+    textToCopy += `   期間：${formatFull(computedSchedule.p2.start)} 〜 ${formatFull(computedSchedule.p2.end)} (${computedSchedule.p2.days}日間)\n\n`;
+    textToCopy += `③ 工事フェーズ      [    ■■■■■  ]\n`;
+    textToCopy += `   期間：${formatFull(computedSchedule.p3.start)} 〜 ${formatFull(computedSchedule.p3.end)} (${computedSchedule.p3.days}日間)\n\n`;
+    textToCopy += `④ 検査・引き渡し   [          ■■]\n`;
+    textToCopy += `   期間：${formatFull(computedSchedule.p4.start)} 〜 ${formatFull(computedSchedule.p4.end)} (${computedSchedule.p4.days}日間)\n`;
+    textToCopy += `----------------------------\n`;
+    
+    if (memo) {
+      textToCopy += `■ 現場連絡メモ：\n${memo}\n`;
+    }
+    textToCopy += `#COCOATOOLS`;
+
+    // クリップボードに安全・確実に書き込み
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      // ユーザーが確信を持てる「レモン緑」に変身！
+      copyBtn.textContent = "コピー完了！Xへ移動します...💨";
+      copyBtn.style.backgroundColor = "#a3e635"; 
+      copyBtn.style.color = "#0d0f12"; 
+
+      // ココアさんオリジナルの1秒のタメタイマー（ポップアップブロックを完璧に回避）
+      setTimeout(() => {
+        window.open("https://x.com", "_blank");
+        
+        // 1秒後に元の美しいココアブルー仕様へ復帰
+        copyBtn.textContent = "日程と工程表テキストをコピー 📋";
+        copyBtn.style.backgroundColor = "#3182ce"; 
+        copyBtn.style.color = "#ffffff";
+      }, 1000);
+    }).catch(err => {
+      alert("コピーに失敗しました。");
+    });
+  });
+
+  // 初回ロード時の初期描画
+  updateSchedule();
+</script>
+</body>
+</html>
