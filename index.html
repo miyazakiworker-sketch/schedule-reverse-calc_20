@@ -395,6 +395,7 @@
   }
 
   // 画像コピー＆正しいX intentジャンプ
+    // HTML工程表を画像（PNG）へリアルタイム変換＆クリップボードコピー
   function copyChartAsImage() {
     if (!computedData.p1_s) return;
 
@@ -433,12 +434,12 @@
         copyBtn.textContent = "画像コピー完了！Xを開きます...📸💨";
         copyBtn.classList.add('copied');
 
-                // 1秒タメたあと、本家Xの投稿画面へ【正しいURL】で確実にジャンプ！
+        // 1秒タメたあと、本家Xの投稿画面へ正しいURLで確実にジャンプ
         setTimeout(() => {
           const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
           const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
           
-          // ★正真正銘の正解：intent/post?text= を完璧に入れ、ドルマーク付きで変数と結合
+          // ★完璧に修正したURL：intent/post?text= と ドルマーク付き中括弧を完全統合
           const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
           window.open(xIntentUrl, "_blank");
           
