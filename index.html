@@ -8,7 +8,7 @@
     /* ココアさん標準：PC真ん中寄せ・スマホ完全フィット・極上の黒モード */
     body {
       background-color: #0d0f12;
-      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
       color: #e2e8f0;
       margin: 0;
       padding: 20px 15px;
@@ -31,7 +31,7 @@
     h1 { font-size: 1.3rem; color: #fff; margin: 0 0 5px 0; text-align: center; font-weight: bold; }
     .bio { font-size: 0.8rem; color: #a0aec0; margin: 0 0 20px 0; text-align: center; line-height: 1.4; }
     
-    /* フォーム基本設定（はみ出しを絶対に防ぐ box-sizing: border-box） */
+    /* フォーム基本設定（はみ出しを絶対に防ぐbox-sizing） */
     .input-group { margin-bottom: 12px; text-align: left; width: 100%; box-sizing: border-box; }
     .input-label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #cbd5e0; }
     .input-row { display: flex; align-items: center; background: #0d0f12; border: 2px solid #2d3748; border-radius: 12px; padding: 2px 12px; box-sizing: border-box; width: 100%; }
@@ -52,7 +52,7 @@
     .date-input { color-scheme: dark; }
     .unit-text { font-size: 0.9rem; color: #718096; font-weight: bold; margin-left: 6px; flex-shrink: 0; }
 
-    /* ★はみ出しバグを完全修正：スマホ画面内へ2カラムで100%ピッタリ収めるグリッド設計 */
+    /* スマホ画面内にぴったり100%収まる2カラムグリッド */
     .detail-inputs {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -66,8 +66,7 @@
       width: 100%;
     }
     .detail-group { display: flex; flex-direction: column; text-align: left; width: 100%; box-sizing: border-box; }
-    .detail-label { font-size: 0.75rem; font-weight: bold; color: #a0aec0; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
+    .detail-label { font-size: 0.75rem; font-weight: bold; color: #a0aec0; margin-bottom: 4px; }
     /* トグルボタン */
     .toggle-row { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
     .toggle-btn {
@@ -122,7 +121,7 @@
     }
     .copy-btn.copied { background-color: #a3e635 !important; color: #0d0f12 !important; }
 
-    /* その他 */
+    /* 広告 ＆ フッター */
     .ad-space { margin-top: 25px; background: #0d0f12; border: 1px dashed #4a5568; border-radius: 8px; padding: 15px; font-size: 0.75rem; color: #718096; text-align: center; box-sizing: border-box; width: 100%; }
     .ad-link { color: #3182ce; text-decoration: none; display: block; margin-top: 4px; font-weight: bold; }
     .footer-x { margin-top: 20px; font-size: 0.8rem; color: #a0aec0; text-align: center; width: 100%; }
@@ -149,14 +148,14 @@
   </div>
 
   <div class="input-group">
-    <label class="input-label" for="totalDays">全体工期日数 (ここを打つと全自動で自動割り振り)</label>
+    <label class="input-label" for="totalDays">全体工期日数</label>
     <div class="input-row">
       <input type="number" id="totalDays" class="num-input" placeholder="30" value="30" min="4">
       <span class="unit-text">日間</span>
     </div>
   </div>
 
-  <!-- 4大工程の個別日数いじりエリア（box-sizing指定で絶対に右側にはみ出さない） -->
+  <!-- 各工程の日数入力欄 -->
   <div class="detail-inputs">
     <div class="detail-group">
       <label class="detail-label">① 準備・設計日数</label>
@@ -218,22 +217,14 @@
 
   <!-- 広告 ＆ フッター -->
   <div class="ad-space">
-      <!-- 将来の広告枠 -->
-  <div class="ad-space">
     【将来の広告枠】<br>ここは将来的にスポンサー枠として活用予定のエリアです。
     <a href="https://x.com/cocoa_next7" target="_blank" class="ad-link">お問い合わせはこちら ↗</a>
   </div>
-
-  <!-- ★ここに開発者Xリンクを完全復活！ -->
   <div class="footer-x">
     開発者：<a href="https://x.com/cocoa_next7" target="_blank">ココア＠プログラミング奮闘中 (@cocoa_next7) ↗</a>
   </div>
-
-  <div class="disclaimer">
-    【免責事項】本ツールは簡易シミュレーションであり、実際の現場状況等により大幅に前後はします。確定スケジュールは必ず施工会社の工程表に従ってください。
-  </div>
-</div> <!-- /.container -->
-
+  <div class="disclaimer">【免責事項】本ツールは簡易シミュレーションであり、実際の現場状況等により大幅に前後はします。確定スケジュールは必ず施工会社の工程表に従ってください。</div>
+</div>
 <script>
   // 状態管理
   let calcMode = 'forward'; // 'forward'(正算) または 'reverse'(逆算)
@@ -269,10 +260,10 @@
   const barP3 = document.getElementById('barP3');
   const barP4 = document.getElementById('barP4');
 
-  // 初期値（今日の日付）設定
+  // 初期日付（今日）設定
   baseDate.value = new Date().toISOString().split('T')[0];
 
-  // イベント登録
+  // モード登録
   modeForward.addEventListener('click', () => {
     calcMode = 'forward';
     modeForward.classList.add('active');
@@ -295,7 +286,7 @@
     updateSchedule(false);
   });
 
-  // 日数計算関数（土日祝除外対応）
+  // 日数計算
   function addDays(startDate, days, direction = 1) {
     let date = new Date(startDate.getTime());
     let remainingDays = Math.abs(days);
@@ -303,7 +294,7 @@
       date.setDate(date.getDate() + direction);
       if (excludeWeekends) {
         const day = date.getDay();
-        if (day === 0 || day === 6) continue; // 土日はスキップ
+        if (day === 0 || day === 6) continue;
       }
       remainingDays--;
     }
@@ -320,7 +311,7 @@
     updateSchedule(true);
   });
 
-  // 個別日数が打ち変わった時の連動
+  // 個別日数が打ち変わった時の連動（全体日数を自動更新）
   const handleDetailInput = () => {
     if (isInternalUpdating) return;
     
@@ -333,7 +324,7 @@
     totalDays.value = d1 + d2 + d3 + d4;
     isInternalUpdating = false;
 
-    updateSchedule(false);
+    updateSchedule(false); // 比率リセットをせずカレンダー更新
   };
 
   daysP1.addEventListener('input', handleDetailInput);
@@ -342,7 +333,7 @@
   daysP4.addEventListener('input', handleDetailInput);
   baseDate.addEventListener('input', () => updateSchedule(false));
 
-  // リアルタイムスケジュール計算コア
+  // スケジュール計算コア
   let computedData = {};
 
   function updateSchedule(resetDetails = true) {
@@ -354,6 +345,7 @@
     let d1, d2, d3, d4;
 
     if (resetDetails) {
+      // 全体工期から比率で自動初期割り振り
       d1 = Math.max(1, Math.round(total * RATIOS.p1));
       d2 = Math.max(1, Math.round(total * RATIOS.p2));
       d4 = Math.max(1, Math.round(total * RATIOS.p4));
@@ -366,6 +358,7 @@
       daysP4.value = d4;
       isInternalUpdating = false;
     } else {
+      // 現在の個別入力欄の数値をそのまま上書き採用
       d1 = parseInt(daysP1.value) || 1;
       d2 = parseInt(daysP2.value) || 1;
       d3 = parseInt(daysP3.value) || 1;
@@ -401,30 +394,18 @@
     barP4.style.width = `${w4}%`; barP4.style.left = `${w1 + w2 + w3}%`;
   }
 
-  // HTML工程表を画像（PNG）へリアルタイム変換＆クリップボードコピー
+  // 画像コピー＆正しいX intentジャンプ
   function copyChartAsImage() {
     if (!computedData.p1_s) return;
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
-    canvas.width = 440;
-    canvas.height = 280;
+    canvas.width = 440; canvas.height = 280;
 
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = '#2f3336';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
-
-    ctx.fillStyle = '#e7e9ea';
-    ctx.font = 'bold 15px sans-serif';
-    ctx.fillText('📋 施工工程スケジュール（目安）', 20, 30);
-
-    ctx.strokeStyle = '#2f3336';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(20, 42); ctx.lineTo(420, 42); ctx.stroke();
+    ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#2f3336'; ctx.lineWidth = 2; ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    ctx.fillStyle = '#e7e9ea'; ctx.font = 'bold 15px sans-serif'; ctx.fillText('📋 施工工程スケジュール（目安）', 20, 30);
+    ctx.strokeStyle = '#2f3336'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(20, 42); ctx.lineTo(420, 42); ctx.stroke();
 
     const phases = [
       { name: '1. 準備・設計（図面作成・申請）', date: txtDateP1.textContent, color: '#1d9bf0', d: computedData.d1 },
@@ -436,26 +417,14 @@
     let currentLeft = 0;
     phases.forEach((p, idx) => {
       const yOffset = 65 + (idx * 50);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 11px sans-serif';
-      ctx.fillText(p.name, 20, yOffset);
-
-      ctx.fillStyle = p.color;
-      ctx.font = 'bold 11px sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(p.date, 420, yOffset);
-      ctx.textAlign = 'left';
-
-      ctx.fillStyle = '#16181c';
-      ctx.beginPath(); ctx.roundRect(20, yOffset + 8, 400, 12, 6); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px sans-serif'; ctx.fillText(p.name, 20, yOffset);
+      ctx.fillStyle = p.color; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'right'; ctx.fillText(p.date, 420, yOffset); ctx.textAlign = 'left';
+      ctx.fillStyle = '#16181c'; ctx.beginPath(); ctx.roundRect(20, yOffset + 8, 400, 12, 6); ctx.fill();
 
       const barWidth = (p.d / computedData.total) * 400;
       const barLeft = 20 + (currentLeft / computedData.total) * 400;
       currentLeft += p.d;
-
-      ctx.fillStyle = p.color;
-      ctx.beginPath(); ctx.roundRect(barLeft, yOffset + 8, Math.max(10, barWidth), 12, 6); ctx.fill();
+      ctx.fillStyle = p.color; ctx.beginPath(); ctx.roundRect(barLeft, yOffset + 8, Math.max(10, barWidth), 12, 6); ctx.fill();
     });
 
     canvas.toBlob((blob) => {
@@ -464,21 +433,14 @@
         copyBtn.textContent = "画像コピー完了！Xを開きます...📸💨";
         copyBtn.classList.add('copied');
 
-        // ★大バグ完全消滅：末尾のスラッシュを完全に削り、100%確実にXの投稿画面を開く動線
         setTimeout(() => {
           const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
           const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
           
-                  // 1秒タメたあと、本家Xの投稿画面へ正しいURLで確実にジャンプ！
-        setTimeout(() => {
-          const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
-          const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
-          
-          // ★修正ポイント：頭に $ をしっかり付け、後ろに不要な / も一切入れない正真正銘の正しいURL
+          // 正しいURLでXのインテントを起動
           const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
           window.open(xIntentUrl, "_blank");
           
-          // ボタンの色を元のブルーに戻す
           copyBtn.textContent = "工程表を『画像』としてコピーしてXを開く 📸";
           copyBtn.classList.remove('copied');
         }, 1000);
@@ -490,7 +452,7 @@
 
   copyBtn.addEventListener('click', copyChartAsImage);
 
-  // 初回ロード時の初期割り振り実行
+  // 初回ロード時は全体比率で初期化
   updateSchedule(true);
 </script>
 </body>
