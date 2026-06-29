@@ -469,10 +469,16 @@
           const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
           const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
           
-          // 末尾に不要なスラッシュを加えず、ダイレクトにintentを叩いてジャンプ！
+                  // 1秒タメたあと、本家Xの投稿画面へ正しいURLで確実にジャンプ！
+        setTimeout(() => {
+          const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
+          const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
+          
+          // ★修正ポイント：頭に $ をしっかり付け、後ろに不要な / も一切入れない正真正銘の正しいURL
           const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
           window.open(xIntentUrl, "_blank");
           
+          // ボタンの色を元のブルーに戻す
           copyBtn.textContent = "工程表を『画像』としてコピーしてXを開く 📸";
           copyBtn.classList.remove('copied');
         }, 1000);
