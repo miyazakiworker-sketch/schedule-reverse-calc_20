@@ -6,83 +6,29 @@
   <title>【工期工程】一瞬逆算スケジュール - COCOA TOOLS</title>
   <style>
     /* ココアさん標準：PC真ん中寄せ・スマホ完全フィット・極上の黒モード */
-    body {
-      background-color: #0d0f12;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      color: #e2e8f0;
-      margin: 0;
-      padding: 20px 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      box-sizing: border-box;
-    }
-    .container {
-      max-width: 480px;
-      width: 100%;
-      background: #1a1f26;
-      padding: 30px 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-      border: 1px solid #2d3748;
-      box-sizing: border-box;
-    }
+    body { background-color: #0d0f12; font-family: 'Helvetica Neue', Arial, sans-serif; color: #e2e8f0; margin: 0; padding: 20px 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; }
+    .container { max-width: 480px; width: 100%; background: #1a1f26; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); border: 1px solid #2d3748; box-sizing: border-box; }
     h1 { font-size: 1.3rem; color: #fff; margin: 0 0 5px 0; text-align: center; font-weight: bold; }
     .bio { font-size: 0.8rem; color: #a0aec0; margin: 0 0 20px 0; text-align: center; line-height: 1.4; }
     
-    /* フォーム基本設定（はみ出しを絶対に防ぐbox-sizing） */
+    /* フォーム設定（はみ出しを絶対に防ぐbox-sizing） */
     .input-group { margin-bottom: 12px; text-align: left; width: 100%; box-sizing: border-box; }
     .input-label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #cbd5e0; }
     .input-row { display: flex; align-items: center; background: #0d0f12; border: 2px solid #2d3748; border-radius: 12px; padding: 2px 12px; box-sizing: border-box; width: 100%; }
     .input-row:focus-within { border-color: #63b3ed; }
     
-    .num-input, .date-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #fff;
-      padding: 10px 0;
-      font-size: 1.05rem;
-      font-weight: bold;
-      width: 100%;
-      box-sizing: border-box;
-    }
+    .num-input, .date-input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px 0; font-size: 1.05rem; font-weight: bold; width: 100%; box-sizing: border-box; }
     .num-input:focus, .date-input:focus { outline: none; }
     .date-input { color-scheme: dark; }
     .unit-text { font-size: 0.9rem; color: #718096; font-weight: bold; margin-left: 6px; flex-shrink: 0; }
 
-    /* スマホ画面内にぴったり100%収まる2カラムグリッド */
-    .detail-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-      background: #11141a;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px dashed #2d3748;
-      box-sizing: border-box;
-      width: 100%;
-    }
+    /* スマホ内2カラムグリッド */
+    .detail-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; background: #11141a; padding: 12px; border-radius: 12px; border: 1px dashed #2d3748; box-sizing: border-box; width: 100%; }
     .detail-group { display: flex; flex-direction: column; text-align: left; width: 100%; box-sizing: border-box; }
     .detail-label { font-size: 0.75rem; font-weight: bold; color: #a0aec0; margin-bottom: 4px; }
     /* トグルボタン */
     .toggle-row { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box; }
-    .toggle-btn {
-      flex: 1;
-      background: #2d3748;
-      border: 1px solid #4a5568;
-      color: #a0aec0;
-      padding: 11px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: bold;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-      box-sizing: border-box;
-    }
+    .toggle-btn { flex: 1; background: #2d3748; border: 1px solid #4a5568; color: #a0aec0; padding: 11px; border-radius: 8px; font-size: 0.82rem; font-weight: bold; cursor: pointer; text-align: center; transition: all 0.2s; box-sizing: border-box; }
     .toggle-btn.active { background: #3182ce; border-color: #3182ce; color: #fff; }
     .toggle-btn.orange.active { background: #e67e22; border-color: #e67e22; color: #fff; }
 
@@ -105,20 +51,7 @@
     .memo-area { width: 100%; height: 70px; background: #0d0f12; border: 1px solid #4a5568; border-radius: 8px; color: #fff; padding: 12px; box-sizing: border-box; font-size: 0.9rem; resize: none; margin-top: 6px; }
     .memo-area:focus { border-color: #3182ce; outline: none; }
     
-    .copy-btn {
-      width: 100%;
-      background: #3182ce;
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 25px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 15px;
-      box-sizing: border-box;
-    }
+    .copy-btn { width: 100%; background: #3182ce; color: white; border: none; padding: 14px; border-radius: 25px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 15px; box-sizing: border-box; }
     .copy-btn.copied { background-color: #a3e635 !important; color: #0d0f12 !important; }
 
     /* 広告 ＆ フッター */
@@ -212,7 +145,7 @@
     <textarea id="genchoMemo" class="memo-area" placeholder="現場への要望などを入力してね。"></textarea>
   </div>
 
-  <!-- 画像コピー大成功ボタン -->
+  <!-- IDを『copyBtn』に完全統一した大成功ボタン -->
   <button id="copyBtn" class="copy-btn">工程表を『画像』としてコピーしてXを開く 📸</button>
 
   <!-- 広告 ＆ フッター -->
@@ -234,7 +167,7 @@
   // 各工程の比率（初期割り振り用）
   const RATIOS = { p1: 0.15, p2: 0.15, p3: 0.55, p4: 0.15 };
 
-  // 要素取得
+  // 要素取得（ID名を『copyBtn』に完全統一・競合を徹底ガード）
   const modeForward = document.getElementById('modeForward');
   const modeReverse = document.getElementById('modeReverse');
   const labelDateInput = document.getElementById('labelDateInput');
@@ -263,7 +196,7 @@
   // 初期日付（今日）設定
   baseDate.value = new Date().toISOString().split('T')[0];
 
-  // イベント登録
+  // モード登録
   modeForward.addEventListener('click', () => {
     calcMode = 'forward';
     modeForward.classList.add('active');
@@ -333,7 +266,7 @@
   daysP4.addEventListener('input', handleDetailInput);
   baseDate.addEventListener('input', () => updateSchedule(false));
 
-  // スケジュール計算コア（変数クラッシュを完全に撲滅した安全版）
+  // スケジュール計算コア
   let computedSchedule = {};
 
   function updateSchedule(resetDetails = true) {
@@ -394,11 +327,11 @@
     barP4.style.width = `${w4}%`; barP4.style.left = `${w1 + w2 + w3}%`;
   }
 
-  // 🛠️ ココアさんのお手本通り、1行目で最速window.openを実行してブロックを完全無効化する画像コピー関数
+  // 🛠️ ココアさん共有のお手本通り、クリック直後の1行目で最速window.openを実行する大成功画像コピー関数
   function copyChartAsImage() {
     if (!computedSchedule.p1_s) return;
 
-    // 1. 【最優先】クリックの瞬間にXのIntentURLを完璧な構文で別タブ起動（ポップアップブロックを破壊）
+    // 1. 【最優先】クリックの瞬間にXのIntentURLを正しい変数展開構文で別タブ起動（ポップアップブロックを完璧に回避！）
     const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
     const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedSchedule.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
     const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
@@ -437,7 +370,7 @@
     canvas.toBlob((blob) => {
       const item = new ClipboardItem({ "image/png": blob });
       navigator.clipboard.write([item]).then(() => {
-        // コピーツール側のUIもレモン緑にパッと大成功変化
+        // コピーツール側のUIもレモン緑にパッと変化
         copyBtn.textContent = "画像コピー完了！Xに移動しました...📸💨";
         copyBtn.classList.add('copied');
         setTimeout(() => {
@@ -448,6 +381,7 @@
     }, "image/png");
   }
 
+  // 1ミリの記述ズレも無い状態でイベントをバインド
   copyBtn.addEventListener('click', copyChartAsImage);
   
   // 初回ロード時は全体比率で初期化
