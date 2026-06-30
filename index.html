@@ -250,7 +250,7 @@
     barP4.style.width = `${w4}%`; barP4.style.left = `${w1 + w2 + w3}%`;
   }
 
-   // HTML工程表を画像（PNG）へリアルタイム変換＆クリップボードコピー
+     // HTML工程表を画像（PNG）へリアルタイム変換＆クリップボードコピー
   function copyChartAsImage() {
     if (!computedSchedule.p1) return;
 
@@ -261,7 +261,7 @@
     context.fillStyle = '#000000'; context.fillRect(0, 0, canvas.width, canvas.height);
     context.strokeStyle = '#2f3336'; context.lineWidth = 2; context.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
     context.fillStyle = '#e7e9ea'; context.font = 'bold 15px sans-serif'; context.fillText('📋 施工工程スケジュール（目安）', 20, 30);
-    context.strokeStyle = '#2f3336'; ctx.lineWidth = 1; context.beginPath(); context.moveTo(20, 42); context.lineTo(420, 42); context.stroke();
+    context.strokeStyle = '#2f3336'; context.lineWidth = 1; context.beginPath(); context.moveTo(20, 42); context.lineTo(420, 42); context.stroke();
 
     const phases = [
       { name: '1. 準備・設計（図面作成・申請）', date: txtDateP1.textContent, color: '#1d9bf0', d: parseInt(daysP1.value) || 1 },
@@ -284,7 +284,7 @@
       context.fillStyle = p.color; context.beginPath(); context.roundRect(barLeft, yOffset + 8, Math.max(10, barWidth), 12, 6); context.fill();
     });
 
-    // ★大成功ジャンプ：クリックした最初の1行目で即座に起動するため、ポップアップブロックを完璧に回避
+    // 大成功ジャンプ：クリックの瞬間（1行目）に起動してポップアップブロックを完璧にすり抜けます
     const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
     const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
     const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
