@@ -289,16 +289,32 @@
       ctx.fillStyle = p.color; ctx.beginPath(); ctx.roundRect(barLeft, yOffset + 8, Math.max(10, barWidth), 12, 6); ctx.fill();
     });
 
+       // 3. 確実にポップアップブロックを回避するため、Blob変換を待たずに別タブを開き、並行して画像コピーを実行
+    // 先に別ウィンドウの器（ウィンドウオブジェクト）を確保します
+    const memo = genchoMemo.value ? `\n【現場メモ】\n${genchoMemo.value}` : '';
+    const tweetText = `【工期工程一瞬逆算スケジュール】\n総工期：${computedData.total}日間\n（※詳細は添付画像をご確認ください）${memo}\n#COCOATOOLS`;
+    const xIntentUrl = `https://x.com{encodeURIComponent(tweetText)}`;
+    
+    // クリックしたまさにその瞬間に実行するため、100%確実にポップアップブロックをすり抜けます
+    const newWindow = window.open(xIntentUrl, "_blank");
+
+    // 画面移動と同時に、裏でCanvasを画像（Blob）に変換してクリップボードへ退避
     canvas.toBlob((blob) => {
       const item = new ClipboardItem({ "image/png": blob });
       navigator.clipboard.write([item]).then(() => {
+        // コピーツール側のボタンも「レモン緑」へパッと変身
         copyBtn.textContent = "画像コピー完了！Xに移動しました...📸💨";
         copyBtn.classList.add('copied');
+
+        // 2秒キープした後に元のデザインへ自動復帰
         setTimeout(() => {
           copyBtn.textContent = "工程表を『画像』としてコピーしてXを開く 📸";
           copyBtn.classList.remove('copied');
         }, 2000);
-      }).catch(err => { console.error("画像コピー失敗:", err); });
+      }).catch((err) => { 
+        console.error("画像コピー失敗:", err); 
+        // 万が一クリップボード書き込みが拒否されても、開いたXのタブはそのまま維持されます
+      });
     }, "image/png");
   }
 
